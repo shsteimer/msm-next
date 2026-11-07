@@ -1,5 +1,7 @@
 import { loadCSS } from './aem.js';
-import { getCurrentLocation, getCurrentSite, getSourceChain } from './locations.js';
+import {
+  getCurrentLocation, getCurrentSite, getEnclosingLocation, getSourceChain,
+} from './locations.js';
 
 export default async function showRibbon() {
   await loadCSS(`${window.hlx.codeBasePath}/styles/msm-ribbon.css`);
@@ -30,6 +32,8 @@ export default async function showRibbon() {
       item('Language', current.language),
       item('Chain', chain),
     );
+    const enclosing = getEnclosingLocation(current);
+    if (enclosing) ribbon.append(item('Nested in', enclosing.path));
   }
   document.body.append(ribbon);
 }

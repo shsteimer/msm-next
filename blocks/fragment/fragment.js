@@ -12,7 +12,7 @@ import {
 import {
   loadSections,
 } from '../../scripts/aem.js';
-import { localizePath } from '../../scripts/locations.js';
+import { localizeFragmentPath } from '../../scripts/locations.js';
 
 /**
  * Loads a fragment.
@@ -21,7 +21,7 @@ import { localizePath } from '../../scripts/locations.js';
  */
 export async function loadFragment(path) {
   if (path && path.startsWith('/') && !path.startsWith('//')) {
-    const localized = localizePath(path);
+    const localized = localizeFragmentPath(path);
     let base = localized;
     let resp = await fetch(`${localized}.plain.html`);
     if (!resp.ok && localized !== path) {

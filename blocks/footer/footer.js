@@ -1,5 +1,7 @@
 import { getMetadata } from '../../scripts/aem.js';
-import { getCurrentLocation, getLocations, getSourceChain } from '../../scripts/locations.js';
+import {
+  getCurrentLocation, getEnclosingLocation, getLocations, getSourceChain,
+} from '../../scripts/locations.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 function buildLocationSwitcher() {
@@ -15,17 +17,22 @@ function buildLocationSwitcher() {
   const list = document.createElement('ul');
   const rootOf = (loc) => getSourceChain(loc).pop();
   const root = rootOf(current);
-  getLocations().filter((l) => rootOf(l) === root).forEach((l) => {
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = `${l.path}${rest}${search}${hash}`;
-    a.textContent = l.label;
-    a.lang = l.language;
-    li.className = `level-${l.level.toLowerCase()}`;
-    if (l === current) a.setAttribute('aria-current', 'true');
-    li.append(a);
-    list.append(li);
-  });
+  // nested locations (e.g. /fr-fr/legal) switch among their peers (other locales' legal);
+  // normal locations among their own tree. The two never mix because trees have different roots.
+  const nested = Boolean(getEnclosingLocation(current));
+  getLocations()
+    .filter((l) => rootOf(l) === root && Boolean(getEnclosingLocation(l)) === nested)
+    .forEach((l) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `${l.path}${rest}${search}${hash}`;
+      a.textContent = l.label;
+      a.lang = l.language;
+      li.className = `level-${l.level.toLowerCase()}`;
+      if (l === current) a.setAttribute('aria-current', 'true');
+      li.append(a);
+      list.append(li);
+    });
   details.append(summary, list);
   return details;
 }
