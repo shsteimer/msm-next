@@ -1,5 +1,5 @@
 import { getMetadata } from '../../scripts/aem.js';
-import { getCurrentLocation, getLocations } from '../../scripts/locations.js';
+import { getCurrentLocation, getLocations, getSourceChain } from '../../scripts/locations.js';
 import { loadFragment } from '../fragment/fragment.js';
 
 function buildLocationSwitcher() {
@@ -13,7 +13,9 @@ function buildLocationSwitcher() {
   const summary = document.createElement('summary');
   summary.textContent = `${current.label} (${current.language})`;
   const list = document.createElement('ul');
-  getLocations().forEach((l) => {
+  const rootOf = (loc) => getSourceChain(loc).pop();
+  const root = rootOf(current);
+  getLocations().filter((l) => rootOf(l) === root).forEach((l) => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = `${l.path}${rest}${search}${hash}`;
