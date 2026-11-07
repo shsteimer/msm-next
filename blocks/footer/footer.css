@@ -18,3 +18,33 @@ footer .footer p {
     padding: 40px 32px 24px;
   }
 }
+
+footer .location-switcher-wrapper {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+}
+
+footer .location-switcher summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+footer .location-switcher ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 4px 16px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+footer .location-switcher li.level-global,
+footer .location-switcher li.level-region,
+footer .location-switcher li.level-language {
+  font-style: italic;
+}
+
+footer .location-switcher a[aria-current] {
+  font-weight: 700;
+}

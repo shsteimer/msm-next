@@ -11,6 +11,7 @@ import {
   loadCSS,
   buildBlock,
 } from './aem.js';
+import { getCurrentLocation, localizeLinks } from './locations.js';
 
 if (window.trustedTypes && window.trustedTypes.createPolicy) {
   const innerTT = window.trustedTypes.createPolicy('tt-inner', {
@@ -153,6 +154,18 @@ export function decorateMain(main) {
   decorateSections(main);
   decorateBlocks(main);
   decorateButtons(main);
+  localizeLinks(main);
+}
+
+function isMsmRibbonEnabled() {
+  const param = new URLSearchParams(window.location.search).get('msm');
+  try {
+    if (param === '1') sessionStorage.setItem('msm-ribbon', 'true');
+    if (param === '0') sessionStorage.removeItem('msm-ribbon');
+    return sessionStorage.getItem('msm-ribbon') === 'true';
+  } catch (e) {
+    return param === '1';
+  }
 }
 
 /**
@@ -160,7 +173,7 @@ export function decorateMain(main) {
  * @param {Element} doc The container element
  */
 async function loadEager(doc) {
-  document.documentElement.lang = 'en';
+  document.documentElement.lang = getCurrentLocation()?.language || 'en';
   decorateTemplateAndTheme();
   const main = doc.querySelector('main');
   if (main) {
@@ -197,6 +210,10 @@ async function loadLazy(doc) {
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
+
+  if (isMsmRibbonEnabled()) {
+    import('./msm-ribbon.js').then(({ default: showRibbon }) => showRibbon());
+  }
 }
 
 /**
